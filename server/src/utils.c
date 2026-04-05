@@ -16,14 +16,20 @@ int iniciar_servidor(void)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(NULL, PUERTO, &hints, &servinfo);
+	getaddrinfo("127.0.0.1", "4444", &hints, &servinfo);
 
 	// Creamos el socket de escucha del servidor
-
+	int fd_conexion = socket(servinfo->ai_family,
+                         servinfo->ai_socktype,
+                         servinfo->ai_protocol);
 	// Asociamos el socket a un puerto
+	err = setsockopt(fd_escucha, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
 
+	err = bind(fd_escucha, server_info->ai_addr, server_info->ai_addrlen);
+
+	err = listen(fd_escucha, SOMAXCONN);
 	// Escuchamos las conexiones entrantes
-
+	
 	freeaddrinfo(servinfo);
 	log_trace(logger, "Listo para escuchar a mi cliente");
 
