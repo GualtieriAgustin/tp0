@@ -16,29 +16,35 @@ int main(void)
 
 	logger = iniciar_logger();
 
-	// Usando el logger creado previamente
-	logger = log_create("tp0.log", "tp0", true, LOG_LEVEL_INFO);
-	// Escribi: "Hola! Soy un log"
-	log_info(logger, "Hola! Soy un log");
+	logger = log_create("client.log", "Client", 1, LOG_LEVEL_DEBUG);
 
-	//---------------- ARCHIVOS DE CONFIGURACION ---------------- 
-	
+	// Usando el logger creado previamentes
+	// Escribi: "Hola! Soy un log"
+	log_info(logger,"Hola soy un log");
+
+	/* ---------------- ARCHIVOS DE CONFIGURACION ---------------- */
+
 	config = iniciar_config();
+
 
 	// Usando el config creado previamente, leemos los valores del config y los 
 	// dejamos en las variables 'ip', 'puerto' y 'valor'
 	config = config_create("cliente.config");
 
-	ip = config_get_string_value(config, "IP");
-	puerto = config_get_string_value(config, "PUERTO");
-	valor = config_get_string_value(config, "CLAVE");
-	// Loggeamos el valor de config
+	if (config == NULL) {
+    // ¡No se pudo crear el config!
+    // Terminemos el programa
+	}else{
+		// Loggeamos el valor de config
+		ip = config_get_string_value(config,"IP");
+		puerto = config_get_string_value(config,"PUERTO");
+		valor = config_get_string_value(config,"CLAVE");
 
-	log_info(logger, "Valor de config CLAVE: %s", valor);
-	log_info(logger, "Valor de config IP: %s", ip);
-	log_info(logger, "Valor de config PUERTO: %s", puerto);
-
-	//---------------- LEER DE CONSOLA ---------------- 
+		log_info(logger, "La ip es: %s", ip);
+		log_info(logger, "El puerto es: %s", puerto);
+		log_info(logger, "El valor es: %s", valor);
+	}
+	/* ---------------- LEER DE CONSOLA ---------------- */
 
 	leer_consola(logger);
 
@@ -52,9 +58,9 @@ int main(void)
 	// Enviamos al servidor el valor de CLAVE como mensaje
 
 	// Armamos y enviamos el paquete
-	paquete(conexion);
+	//paquete(conexion);
 
-	terminar_programa(conexion, logger, config);
+	//terminar_programa(conexion, logger, config);
 
 	/*---------------------------------------------------PARTE 5-------------------------------------------------------------*/
 	// Proximamente
@@ -83,12 +89,17 @@ void leer_consola(t_log* logger)
 	leido = readline("> ");
 
 	// El resto, las vamos leyendo y logueando hasta recibir un string vacío
-	while (strlen(leido) > 0)
-	{
-		log_info(logger, leido);
+
+
+	if (strcmp(leido, "") == 0) {
+    // string vacío → cortar
 		free(leido);
-		leido = readline("> ");
+	} else {
+		log_info(logger, "Leido por consola: %s", leido);
+		free(leido);
+		leer_consola(logger);
 	}
+
 
 	// ¡No te olvides de liberar las lineas antes de regresar!
 
