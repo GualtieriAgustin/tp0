@@ -3,7 +3,7 @@
 int main(void)
 {
 	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
-
+	
 	int conexion;
 	char* ip;
 	char* puerto;
@@ -11,30 +11,38 @@ int main(void)
 
 	t_log* logger;
 	t_config* config;
-
-	/* ---------------- LOGGING ---------------- */
+	
+	//---------------- LOGGING ---------------- 
 
 	logger = iniciar_logger();
 
 	// Usando el logger creado previamente
+	logger = log_create("tp0.log", "tp0", true, LOG_LEVEL_INFO);
 	// Escribi: "Hola! Soy un log"
+	log_info(logger, "Hola! Soy un log");
 
-
-	/* ---------------- ARCHIVOS DE CONFIGURACION ---------------- */
-
+	//---------------- ARCHIVOS DE CONFIGURACION ---------------- 
+	
 	config = iniciar_config();
 
 	// Usando el config creado previamente, leemos los valores del config y los 
 	// dejamos en las variables 'ip', 'puerto' y 'valor'
+	config = config_create("cliente.config");
 
+	ip = config_get_string_value(config, "IP");
+	puerto = config_get_string_value(config, "PUERTO");
+	valor = config_get_string_value(config, "CLAVE");
 	// Loggeamos el valor de config
 
+	log_info(logger, "Valor de config CLAVE: %s", valor);
+	log_info(logger, "Valor de config IP: %s", ip);
+	log_info(logger, "Valor de config PUERTO: %s", puerto);
 
-	/* ---------------- LEER DE CONSOLA ---------------- */
+	//---------------- LEER DE CONSOLA ---------------- 
 
 	leer_consola(logger);
 
-	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
+	//---------------------------------------------------PARTE 3-------------------------------------------------------------
 
 	// ADVERTENCIA: Antes de continuar, tenemos que asegurarnos que el servidor esté corriendo para poder conectarnos a él
 
@@ -50,6 +58,7 @@ int main(void)
 
 	/*---------------------------------------------------PARTE 5-------------------------------------------------------------*/
 	// Proximamente
+
 }
 
 t_log* iniciar_logger(void)
@@ -74,7 +83,12 @@ void leer_consola(t_log* logger)
 	leido = readline("> ");
 
 	// El resto, las vamos leyendo y logueando hasta recibir un string vacío
-
+	while (strlen(leido) > 0)
+	{
+		log_info(logger, leido);
+		free(leido);
+		leido = readline("> ");
+	}
 
 	// ¡No te olvides de liberar las lineas antes de regresar!
 
